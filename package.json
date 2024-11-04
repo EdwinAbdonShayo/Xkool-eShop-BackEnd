@@ -1,0 +1,30 @@
+{
+  "name": "xkool-eshop",
+  "version": "1.0.0",
+  "description": "A backend app for the Xkool eShop web application",
+  "main": "app.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdwinAbdonShayo/Xkool-eShop-BackEnd.git"
+  },
+  "keywords": [
+    "eShop",
+    "commercial-website",
+    "webapp",
+    "js",
+    "node"
+  ],
+  "author": "Edwin Abdon SHAYO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EdwinAbdonShayo/Xkool-eShop-BackEnd/issues"
+  },
+  "homepage": "https://github.com/EdwinAbdonShayo/Xkool-eShop-BackEnd#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongodb": "^6.10.0"
+  }
+}
