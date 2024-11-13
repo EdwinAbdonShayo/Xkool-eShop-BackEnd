@@ -4,7 +4,8 @@
   "description": "A backend app for the Xkool eShop web application",
   "main": "app.js",
   "scripts": {
-    "test": "start"
+    "test": "start",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,9 @@
   },
   "homepage": "https://github.com/EdwinAbdonShayo/Xkool-eShop-BackEnd#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.1",
-    "mongodb": "^6.10.0"
+    "mongodb": "^6.10.0",
+    "properties-reader": "^2.3.0"
   }
 }
