@@ -28,6 +28,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mongodb": "^6.10.0",
+    "nodemon": "^3.1.7",
     "properties-reader": "^2.3.0"
   }
 }
