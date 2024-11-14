@@ -73,6 +73,29 @@ app.get('/orders', async (req, res) => {
     }
 });
 
+app.put('/orders', async (req, res) => {
+    try {  
+        const database = client.db('Xkool-eShop');
+        const orders = database.collection('Orders');
+
+        const { orderNo } = req.params;
+
+        const result = await order.updateOne(
+            { orderNo: parseInt(orderNo) },
+            { $set: req.body }
+        );
+
+        if (result.matchedCount === 0 ) {
+            res.status(404).json({ error: 'Order not found' });
+        }
+
+        console.log("Updated Successfully");
+        res.json(result);
+   }catch (error) {
+        res.status(500).json({error: "Operation Failed!"});
+   }
+});
+
 // Connect to MongoDB and start server
 connectToMongoDB().then(() => {
     app.listen(PORT, () => {
