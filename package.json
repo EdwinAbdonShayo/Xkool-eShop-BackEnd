@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "A backend app for the Xkool eShop web application",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "test": "start",
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",

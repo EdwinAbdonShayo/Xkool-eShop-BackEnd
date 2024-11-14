@@ -1,12 +1,12 @@
 // importing modules
-const express = require('express');
-const cors = require('cors');
-const { MongoClient } = require('mongodb');
-const propertiesReader = require('properties-reader');
+import express from 'express';
+import cors from 'cors';
+import { MongoClient } from 'mongodb';
+import propertiesReader from 'properties-reader';
 
 // Load configuration properties
 const properties = propertiesReader('./config.properties');
-const PORT = properties.get('server.port') || 5454;
+const PORT = properties.get('server.port') || 3000;
 const MONGO_URI = properties.get('mongodb.uri');
 
 // Initialize Express app
@@ -16,10 +16,11 @@ app.use(express.json());
 
 // MongoDB connection
 let db;
+let client;
 
 async function connectToMongoDB() {
     try {
-        const client = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+        client = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
         db = client.db();
         console.log('Connected to MongoDB');
@@ -31,16 +32,44 @@ async function connectToMongoDB() {
 
 // Sample route
 app.get('/', (req, res) => {
-    res.send('Hello, World!');
+    res.send('Hello, Server Running Here!');
 });
 
-// Example endpoint to get all items from a collection
-app.get('/api/items', async (req, res) => {
+// endpoint to get all items from a collection
+app.get('/programs', async (req, res) => {
     try {
-        const items = await db.collection('items').find({}).toArray();
+        const database = client.db('Xkool-eShop');
+        const items = await database.collection('Programs').find({}).toArray();
+        console.log('Here found the database');
         res.json(items);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch items' });
+        process.exit(1);
+    }
+});
+
+// Posting the new order into the database
+app.post('/orders', async (req, res) => {
+    try {
+        const database = client.db('Xkool-eShop');
+        const order = database.collection('Orders');
+        const result = await order.insertOne(req.body);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create order' });
+        process.exit(1)    ;
+    }
+});
+
+// endpoint to get all orders from a collection
+app.get('/orders', async (req, res) => {
+    try {
+        const database = client.db('Xkool-eShop');
+        const orders = await database.collection('Orders').find({}).toArray();
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch orders' });
+        process.exit(1);
     }
 });
 
