@@ -20,7 +20,7 @@ let client;
 
 async function connectToMongoDB() {
     try {
-        client = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+        client = new MongoClient(MONGO_URI);
         await client.connect();
         db = client.db();
         console.log('Connected to MongoDB');
@@ -73,10 +73,10 @@ app.get('/orders', async (req, res) => {
     }
 });
 
-app.put('/orders', async (req, res) => {
+app.put('/orders/:orderNo', async (req, res) => {
     try {  
         const database = client.db('Xkool-eShop');
-        const orders = database.collection('Orders');
+        const order = database.collection('Orders');
 
         const { orderNo } = req.params;
 
