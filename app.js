@@ -48,6 +48,18 @@ app.get('/programs', async (req, res) => {
     }
 });
 
+// endpoint to get all orders from a collection
+app.get('/orders', async (req, res) => {
+    try {
+        const database = client.db('Xkool-eShop');
+        const orders = await database.collection('Orders').find({}).toArray();
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch orders' });
+        process.exit(1);
+    }
+});
+
 // Posting the new order into the database
 app.post('/orders', async (req, res) => {
     try {
@@ -57,18 +69,6 @@ app.post('/orders', async (req, res) => {
         res.json(result);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create order' });
-        process.exit(1)    ;
-    }
-});
-
-// endpoint to get all orders from a collection
-app.get('/orders', async (req, res) => {
-    try {
-        const database = client.db('Xkool-eShop');
-        const orders = await database.collection('Orders').find({}).toArray();
-        res.json(orders);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch orders' });
         process.exit(1);
     }
 });
@@ -82,6 +82,29 @@ app.put('/orders/:orderNo', async (req, res) => {
 
         const result = await order.updateOne(
             { orderNo: parseInt(orderNo) },
+            { $set: req.body }
+        );
+
+        if (result.matchedCount === 0 ) {
+            res.status(404).json({ error: 'Order not found' });
+        }
+
+        console.log("Updated Successfully");
+        res.json(result);
+   }catch (error) {
+        res.status(500).json({error: "Operation Failed!"});
+   }
+});
+
+app.put('/programs/:id', async (req, res) => {
+    try {  
+        const database = client.db('Xkool-eShop');
+        const program = database.collection('Programs');
+
+        const { id } = req.params;
+
+        const result = await program.updateOne(
+            { id: parseInt(id) },
             { $set: req.body }
         );
 
