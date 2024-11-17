@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import propertiesReader from 'properties-reader';
+import path from 'path';
 
 // Load configuration properties
 const properties = propertiesReader('./config.properties');
@@ -13,6 +14,21 @@ const MONGO_URI = properties.get('mongodb.uri');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Initializing the middleware logger
+app.use((req, res, next) => {
+    const time = new Date().toISOString();
+    console.log(`${req.method} ${req.url} - ${time}`);
+    next();
+})
+
+// static file middleware
+
+const imagePath = path.resolve(process.cwd(), 'Media');
+app.use('/images', express.static(imagePath, { fallthrough: true }));
+app.use('/images', (req, res) => {
+    res.status(404).json({ error: 'Image not found' });
+});
 
 // MongoDB connection
 let db;
@@ -40,8 +56,8 @@ app.get('/programs', async (req, res) => {
     try {
         const database = client.db('Xkool-eShop');
         const items = await database.collection('Programs').find({}).toArray();
-        console.log('Here found the database');
         res.json(items);
+        console.log('Displaying data in the Programs Collection');
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch items' });
         process.exit(1);
@@ -54,6 +70,7 @@ app.get('/orders', async (req, res) => {
         const database = client.db('Xkool-eShop');
         const orders = await database.collection('Orders').find({}).toArray();
         res.json(orders);
+        console.log('Displaying data in the Orders Collection');
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch orders' });
         process.exit(1);
@@ -67,6 +84,7 @@ app.post('/orders', async (req, res) => {
         const order = database.collection('Orders');
         const result = await order.insertOne(req.body);
         res.json(result);
+        console.log('Posted a new order');
     } catch (error) {
         res.status(500).json({ error: 'Failed to create order' });
         process.exit(1);
@@ -89,7 +107,7 @@ app.put('/orders/:orderNo', async (req, res) => {
             res.status(404).json({ error: 'Order not found' });
         }
 
-        console.log("Updated Successfully");
+        console.log("Updated an order successfully");
         res.json(result);
    }catch (error) {
         res.status(500).json({error: "Operation Failed!"});
@@ -112,7 +130,7 @@ app.put('/programs/:id', async (req, res) => {
             res.status(404).json({ error: 'Order not found' });
         }
 
-        console.log("Updated Successfully");
+        console.log("Updated a program successfully");
         res.json(result);
    }catch (error) {
         res.status(500).json({error: "Operation Failed!"});
