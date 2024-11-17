@@ -12,7 +12,10 @@ const MONGO_URI = properties.get('mongodb.uri');
 
 // Initialize Express app
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5500'
+}));
+
 app.use(express.json());
 
 // Initializing the middleware logger
