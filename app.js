@@ -28,8 +28,8 @@ app.use((req, res, next) => {
 // static file middleware
 
 const imagePath = path.resolve(process.cwd(), 'Media');
-app.use('/images', express.static(imagePath, { fallthrough: true }));
-app.use('/images', (req, res) => {
+app.use('/Media', express.static(imagePath, { fallthrough: true }));
+app.use('/Media', (req, res) => {
     res.status(404).json({ error: 'Image not found' });
 });
 
