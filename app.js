@@ -29,9 +29,17 @@ app.use((req, res, next) => {
 
 const imagePath = path.resolve(process.cwd(), 'Media');
 app.use('/Media', express.static(imagePath, { fallthrough: true }));
+
+// Handle 404 for missing images
 app.use('/Media', (req, res) => {
-    res.status(404).json({ error: 'Image not found' });
+    console.log(`Image not found: ${req.originalUrl}`);
+    // res.status(404).json({ error: 'Image not found' });
 });
+
+// app.use('/Media', express.static(imagePath, { fallthrough: true }));
+// app.use('/Media', (req, res) => {
+//     res.status(404).json({ error: 'Image not found' });
+// });
 
 // MongoDB connection
 let db;
