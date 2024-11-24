@@ -151,16 +151,15 @@ app.get('/search', async (req, res) => {
         const database = client.db('Xkool-eShop');
         const collection = database.collection('Programs');
 
-        const searchNumber = parseInt(searchQuery);
-
         let query = {};
         
 
-        if (!isNaN(searchNumber)) {
+        if (!isNaN(searchQuery)) {
+            const numberAsString = searchQuery.toString();
             query = {
                 $or: [
-                    { price: { $gte: searchNumber } }, 
-                    { availableSpaces: { $gte: searchNumber } }, 
+                    { $expr: { $regexMatch: {input: { $toString: "$price" }, regex: numberAsString, options: "i" } } }, 
+                    { $expr: { $regexMatch: {input: { $toString: "$availableSpaces" }, regex: numberAsString, options: "i" } } }
                 ]
             };
         } else {
