@@ -1,5 +1,5 @@
 // importing modules
-import express from 'express';
+import express, { query } from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import propertiesReader from 'properties-reader';
@@ -49,9 +49,9 @@ async function connectToMongoDB() {
     }
 }
 
-// Sample route
+// Base route
 app.get('/', (req, res) => {
-    res.send('Hello, Server Running Here!');
+    res.send('Hey there, fancy my work? click <a href="https://github.com/EdwinAbdonShayo">here<a> to fancy more! <br>After you done fancing, you could buy me a <a href="https://buymeacoffee.com/EdwinAbdonShayo">Coffee<a>');
 });
 
 // endpoint to get all items from a collection
@@ -67,7 +67,7 @@ app.get('/programs', async (req, res) => {
     }
 });
 
-// endpoint to get all orders from a collection
+// endpoint to get all orders from a collection (testing purposes, not used in the frontend)
 app.get('/orders', async (req, res) => {
     try {
         const database = client.db('Xkool-eShop');
@@ -94,28 +94,28 @@ app.post('/orders', async (req, res) => {
     }
 });
 
-app.put('/orders/:orderNo', async (req, res) => {
-    try {  
-        const database = client.db('Xkool-eShop');
-        const order = database.collection('Orders');
+// app.put('/orders/:orderNo', async (req, res) => {
+//     try {  
+//         const database = client.db('Xkool-eShop');
+//         const order = database.collection('Orders');
 
-        const { orderNo } = req.params;
+//         const { orderNo } = req.params;
 
-        const result = await order.updateOne(
-            { orderNo: parseInt(orderNo) },
-            { $set: req.body }
-        );
+//         const result = await order.updateOne(
+//             { orderNo: parseInt(orderNo) },
+//             { $set: req.body }
+//         );
 
-        if (result.matchedCount === 0 ) {
-            res.status(404).json({ error: 'Order not found' });
-        }
+//         if (result.matchedCount === 0 ) {
+//             res.status(404).json({ error: 'Order not found' });
+//         }
 
-        console.log("Updated an order successfully");
-        res.json(result);
-   }catch (error) {
-        res.status(500).json({error: "Operation Failed!"});
-   }
-});
+//         console.log("Updated an order successfully");
+//         res.json(result);
+//    }catch (error) {
+//         res.status(500).json({error: "Operation Failed!"});
+//    }
+// });
 
 app.put('/programs/:id', async (req, res) => {
     try {  
@@ -139,6 +139,49 @@ app.put('/programs/:id', async (req, res) => {
         res.status(500).json({error: "Operation Failed!"});
    }
 });
+
+// endpoint to search documents in the database, the Programs Collection
+app.get('/search', async (req, res) => {
+    try {
+        const searchQuery = req.query.q; 
+        if (!searchQuery) {
+            return res.status(400).json({ error: "Search query is required" });
+        }
+
+        const database = client.db('Xkool-eShop');
+        const collection = database.collection('Programs');
+
+        const searchNumber = parseInt(searchQuery);
+
+        let query = {};
+        
+
+        if (!isNaN(searchNumber)) {
+            query = {
+                $or: [
+                    { price: { $gte: searchNumber } }, 
+                    { availableSpaces: { $gte: searchNumber } }, 
+                ]
+            };
+        } else {
+            query = {
+                $or: [
+                    { title: { $regex: searchQuery, $options: 'i' } }, 
+                    { location: { $regex: searchQuery, $options: 'i' } }                 
+                ]
+            };
+        }
+
+        const results = await collection.find(query).toArray();
+
+        res.json(results);
+        console.log(`Search successful with query: "${searchQuery}"`);
+    } catch (error) {
+        res.status(500).json({ error: "Search Failed!" });
+        console.error("Error performing search:", error);
+    }
+});
+
 
 // Connect to MongoDB and start server
 connectToMongoDB().then(() => {
