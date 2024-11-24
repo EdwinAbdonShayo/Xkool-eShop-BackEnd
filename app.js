@@ -94,29 +94,6 @@ app.post('/orders', async (req, res) => {
     }
 });
 
-// app.put('/orders/:orderNo', async (req, res) => {
-//     try {  
-//         const database = client.db('Xkool-eShop');
-//         const order = database.collection('Orders');
-
-//         const { orderNo } = req.params;
-
-//         const result = await order.updateOne(
-//             { orderNo: parseInt(orderNo) },
-//             { $set: req.body }
-//         );
-
-//         if (result.matchedCount === 0 ) {
-//             res.status(404).json({ error: 'Order not found' });
-//         }
-
-//         console.log("Updated an order successfully");
-//         res.json(result);
-//    }catch (error) {
-//         res.status(500).json({error: "Operation Failed!"});
-//    }
-// });
-
 app.put('/programs/:id', async (req, res) => {
     try {  
         const database = client.db('Xkool-eShop');
@@ -143,7 +120,7 @@ app.put('/programs/:id', async (req, res) => {
 // endpoint to search documents in the database, the Programs Collection
 app.get('/search', async (req, res) => {
     try {
-        const searchQuery = req.query.q; 
+        const searchQuery = req.query.term; 
         if (!searchQuery) {
             return res.status(400).json({ error: "Search query is required" });
         }
