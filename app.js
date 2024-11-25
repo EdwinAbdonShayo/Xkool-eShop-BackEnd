@@ -19,19 +19,17 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://edwinabdonshayo.github.io']
+    origin: 'https://edwinabdonshayo.github.io'
 }));
+
+// app.use(cors({
+//     origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://edwinabdonshayo.github.io']
+// }));
 
 
 // Initializing the middleware logger
 
 app.use(morgan('common'));
-
-// app.use((req, res, next) => {
-//     const time = new Date().toISOString();
-//     console.log(`${req.method} ${req.url} - ${time}`);
-//     next();
-// })
 
 // static file middleware
 
@@ -130,7 +128,7 @@ app.put('/programs/:id', async (req, res) => {
 // endpoint to search documents in the database, the Programs Collection
 app.get('/search', async (req, res) => {
     try {
-        const searchQuery = req.query.term; 
+        const searchQuery = (req.query.term).toString(); 
         if (!searchQuery) {
             return res.status(400).json({ error: "Search query is required" });
         }
@@ -138,25 +136,15 @@ app.get('/search', async (req, res) => {
         const database = client.db('Xkool-eShop');
         const collection = database.collection('Programs');
 
-        let query = {};
-        
+        // const searchQuery = searchQuery.toString();
 
-        if (!isNaN(searchQuery)) {
-            const numberAsString = searchQuery.toString();
-            query = {
-                $or: [
-                    { $expr: { $regexMatch: {input: { $toString: "$price" }, regex: numberAsString, options: "i" } } }, 
-                    { $expr: { $regexMatch: {input: { $toString: "$availableSpaces" }, regex: numberAsString, options: "i" } } }
-                ]
-            };
-        } else {
-            query = {
-                $or: [
-                    { title: { $regex: searchQuery, $options: 'i' } }, 
-                    { location: { $regex: searchQuery, $options: 'i' } }                 
-                ]
-            };
-        }
+        let query = {
+                    $or: [
+                            { $expr: { $regexMatch: {input: { $toString: "$price" }, regex: searchQuery, options: "i" } } }, 
+                            { $expr: { $regexMatch: {input: { $toString: "$availableSpaces" }, regex: searchQuery, options: "i" } } },
+                            { title: { $regex: searchQuery, $options: 'i' } }, 
+                            { location: { $regex: searchQuery, $options: 'i' } } 
+        ]};
 
         const results = await collection.find(query).toArray();
 
