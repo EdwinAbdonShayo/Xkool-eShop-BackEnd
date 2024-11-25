@@ -1,29 +1,37 @@
 // importing modules
-import express, { query } from 'express';
+import express from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import propertiesReader from 'properties-reader';
 import path from 'path';
+import morgan from 'morgan';
 
 // Load configuration properties
 const properties = propertiesReader('./config.properties');
 const PORT = properties.get('server.port') || 3000;
-const MONGO_URI = properties.get('mongodb.uri');
+const MONGO_PREFIX = properties.get('mongo.prefix');
+const MONGO_PASS = encodeURIComponent(properties.get('mongo.pass'));
+const MONGO_URL = properties.get('mongo.url');
+const MONGO_URI = `${MONGO_PREFIX}${MONGO_PASS}${MONGO_URL}`;
 
 // Initialize Express app
 const app = express();
+app.use(express.json());
+
 app.use(cors({
     origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://edwinabdonshayo.github.io']
 }));
 
-app.use(express.json());
 
 // Initializing the middleware logger
-app.use((req, res, next) => {
-    const time = new Date().toISOString();
-    console.log(`${req.method} ${req.url} - ${time}`);
-    next();
-})
+
+app.use(morgan('common'));
+
+// app.use((req, res, next) => {
+//     const time = new Date().toISOString();
+//     console.log(`${req.method} ${req.url} - ${time}`);
+//     next();
+// })
 
 // static file middleware
 
@@ -33,13 +41,7 @@ app.use('/Media', express.static(imagePath, { fallthrough: true }));
 // Handle 404 for missing images
 app.use('/Media', (req, res) => {
     console.log(`Image not found: ${req.originalUrl}`);
-    // res.status(404).json({ error: 'Image not found' });
 });
-
-// app.use('/Media', express.static(imagePath, { fallthrough: true }));
-// app.use('/Media', (req, res) => {
-//     res.status(404).json({ error: 'Image not found' });
-// });
 
 // MongoDB connection
 let db;
@@ -165,7 +167,6 @@ app.get('/search', async (req, res) => {
         console.error("Error performing search:", error);
     }
 });
-
 
 // Connect to MongoDB and start server
 connectToMongoDB().then(() => {
