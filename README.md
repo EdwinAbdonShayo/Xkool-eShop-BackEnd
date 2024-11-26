@@ -26,6 +26,9 @@ npm install
 - This backend app is also hosted on render at:
 [link to render.com](https://xkool-eshop-backend.onrender.com/)
 
+- Also, this backend is linked to the frontend at:
+[link to frontend](https://github.com/EdwinAbdonShayo/Xkool-eShop/)
+
 - To start the application, use the following command:
 
 ```bash
