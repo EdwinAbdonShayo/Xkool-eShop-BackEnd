@@ -88,7 +88,7 @@ app.get('/orders', async (req, res) => {
     }
 });
 
-// Posting the new order into the database
+// endpoint for Posting the new order into the database
 app.post('/orders', async (req, res) => {
     try {
         const database = client.db('Xkool-eShop');
@@ -102,6 +102,7 @@ app.post('/orders', async (req, res) => {
     }
 });
 
+// endpoint for Updating (Puting) the new changes into the programs spaces
 app.put('/programs/:id', async (req, res) => {
     try {  
         const database = client.db('Xkool-eShop');
@@ -135,8 +136,6 @@ app.get('/search', async (req, res) => {
 
         const database = client.db('Xkool-eShop');
         const collection = database.collection('Programs');
-
-        // const searchQuery = searchQuery.toString();
 
         let query = {
                     $or: [
