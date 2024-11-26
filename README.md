@@ -14,7 +14,8 @@ A backend application for the Xkool eShop web application. This application prov
 ## Installation
 To get started with the Xkool eShop backend, clone the repository and install the dependencies.
 
-```bash
+> bash code
+```
 git clone https://github.com/EdwinAbdonShayo/Xkool-eShop-BackEnd.git
 
 cd Xkool-eShop-BackEnd
@@ -31,7 +32,8 @@ npm install
 
 - To start the application, use the following command:
 
-```bash
+> bash code
+```
 npm start
 ```
 
